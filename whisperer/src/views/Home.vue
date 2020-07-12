@@ -1,18 +1,29 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+// Firestoreのデータベースをインポート
+import { db } from '../main' 
 
 export default {
   name: 'Home',
   components: {
-    HelloWorld
+  },
+  data () {
+    return {
+      // whispersという空の配列を、Firestoreから取得するwhisperデータの入れ物として用意
+      whispers: []
+    }
+  },
+  firestore () {
+    // 空の配列whispersにFirestore内にある「whispers」コレクション内のドキュメントを格納
+    return {
+      whispers: db.collection('whispers')
+    }
   }
 }
 </script>
