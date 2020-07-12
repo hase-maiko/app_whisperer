@@ -12,6 +12,8 @@
       </div>
     </div>
     <div class="list">
+      <!-- 該当するユーザーのデータを変数currentUserに格納する -->
+      <Editor :currentUser="currentUser"/>
       <Item 
         v-for="whisper in orderBy(myWhispers,'date',-1)"
         :key="whisper.id" 
@@ -22,21 +24,24 @@
   </div>
 </template>
 <script>
-
 import { db } from '../main'
+import { auth } from '../main'
 import firebase from 'firebase'
-import Item from '@/components/Item' 
-import Vue2Filters from 'vue2-filters' 
+import Vue2Filters from 'vue2-filters'
+import Item from '@/components/Item'
+import Editor from '@/components/Editor'
 
 export default {
-  components: {
-    Item
-  },
   data () {
     return {
       user: {},
-      myWhispers: [] 
+      myWhispers: [],
+      currentUser: {} 
     }
+  },
+  components: {
+    Item,
+    Editor
   },
   firestore () {
     return {
@@ -47,6 +52,12 @@ export default {
       // myWhispersにthis.$route.params.uidというuidを持つドキュメントを格納しています。
       myWhispers: db.collection('whispers').where('uid','==',this.$route.params.uid)
     }
+  },
+  // ログインユーザーのデータを取得
+  created () {
+    auth.onAuthStateChanged(user => {
+      this.currentUser = user
+    })
   },
   mixins: [Vue2Filters.mixin]
 }
