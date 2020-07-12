@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
+import User from '@/views/User.vue'
 
 Vue.use(VueRouter)
 
@@ -19,6 +20,12 @@ Vue.use(VueRouter)
     component: function () {
       return import(/* webpackChunkName: "about" */ '../views/About.vue')
     }
+  },
+  // 「'user/<ユーザーID>'」というURLへのアクセスがあった場合には、Userというvueファイルを使う
+  {
+    path: '/user/:uid',
+    name: 'user',
+    component: User
   }
 ]
 

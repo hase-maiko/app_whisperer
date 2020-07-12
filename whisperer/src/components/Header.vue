@@ -6,7 +6,11 @@
     </router-link>
     <!-- ログインユーザーがいる場合の表示 -->
     <div v-if="currentUser" class="btns">
-      <button :style="'background-image: url('+currentUser.photoURL+')'"></button>
+      <!-- ヘッダーのユーザーアイコンをクリックするとサインイン中のユーザーのページにアクセス -->
+      <router-link :to="'/user/'+currentUser.uid">
+        <button :style="'background-image: url('+currentUser.photoURL+')'">
+        </button>
+      </router-link>
       <button>
         <fa icon="sign-out-alt" @click="signOut" />
       </button>
@@ -44,6 +48,8 @@
         const provider = new firebase.auth.GoogleAuthProvider()
         auth.signInWithPopup(provider)
         .then((result) => {
+          // サインイン後にユーザーページに自動的に移動
+          this.$router.push('/user/'+result.user.uid)
           // ユーザ名をアラートで表示
           alert('Hello, '+result.user.displayName+'!')
           this.createUser(result.user)
