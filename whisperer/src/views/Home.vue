@@ -1,24 +1,23 @@
 <template>
   <div class="home">
     <div class="list">
-      <li v-for="whisper in orderBy(whispers,'date',-1)" :key="whisper.id" class="item">
-        <div class="user-box">
-          <div 
-            class="avatar"
-            :style="'background-image: url('+url+')'"
-          >
-          </div>
-          <p class="user-name">{{whisper.uid}}</p>
-        </div>
-        <div class="content" v-html="whisper.content">
-        </div>
-      </li>
+      <!-- Itemコンポーネントをループ表示させつつ、
+      各whisperデータのIDをidというプロパティとして、
+      また投稿ユーザーのIDをuidというプロパティとして
+      それぞれItemコンポーネントに渡しています。 -->
+      <Item 
+        v-for="whisper in orderBy(whispers,'date',-1)"
+        :key="whisper.id"
+        :id="whisper.id"
+        :uid="whisper.uid" 
+      />
     </div>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
+import Item from '@/components/Item.vue' 
 // Firestoreのデータベースをインポート
 import { db } from '../main' 
 // vue2-filtersを使えるようにする
@@ -39,6 +38,9 @@ export default {
     return {
       whispers: db.collection('whispers')
     }
+  },
+  components: {
+    Item
   },
   // vue2-filtersの機能を使用
   mixins: [Vue2Filters.mixin] 
