@@ -24,6 +24,7 @@
   import firebase from 'firebase'
   // mainからauthをインポートする
   import { auth } from '../main'
+  import { db } from '../main'
   export default {
     data () {
       return {
@@ -45,8 +46,20 @@
         .then((result) => {
           // ユーザ名をアラートで表示
           alert('Hello, '+result.user.displayName+'!')
+          this.createUser(result.user)
         })
       },
+      // createUser→ユーザー情報作成のための関数
+      // userのuidをIDとするドキュメントをusersコレクションに追加
+      // name、photoURL、emailをフィールドとして保存
+      createUser (user) {
+        db.collection('users').doc(user.uid).set({
+          'name': user.displayName,
+          'photoURL': user.photoURL,
+          'email':user.email
+        }, { merge: true })
+      },
+      // サインアウト
       signOut () {
         if (window.confirm('Are You Sure to Sign Out?')) {
           auth.signOut()
