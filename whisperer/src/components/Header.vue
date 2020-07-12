@@ -4,9 +4,17 @@
     <router-link to="/">
       <h1>whisp.</h1>
     </router-link>
-    <div class="btns">
-      <button @click="signIn">
-        <fa icon="user" />
+    <!-- ログインユーザーがいる場合の表示 -->
+    <div v-if="currentUser" class="btns">
+      <button :style="'background-image: url('+currentUser.photoURL+')'"></button>
+      <button>
+        <fa icon="sign-out-alt" @click="signOut" />
+      </button>
+    </div>
+    <!-- ログインユーザーがいない場合の表示 -->
+    <div v-else class="btns">
+      <button>
+        <fa icon="user" @click="signIn" />
       </button>
     </div>
   </header>
@@ -17,7 +25,20 @@
   // mainからauthをインポートする
   import { auth } from '../main'
   export default {
+    data () {
+      return {
+        // currentUser→サインイン中のユーザーデータを格納する変数
+        currentUser: {}    
+      }
+    },
+    created () {
+      // currentUserという変数の中に、現在サインインしているユーザーのデータを入れる
+      auth.onAuthStateChanged(user => {
+        this.currentUser = user
+      })
+    },
     methods: {
+      // サインイン
       signIn () {
         const provider = new firebase.auth.GoogleAuthProvider()
         auth.signInWithPopup(provider)
