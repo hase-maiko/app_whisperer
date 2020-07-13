@@ -3,14 +3,16 @@
 <template>
   <li class="item">
     <div class="user-box">
-
-      <div class="avatar" :style="'background-image: url('+user.photoURL+')'">
-      </div> <!-- ここを変更 -->
-
-        <p class="user-name">{{user.name}}</p> <!-- ここを変更 -->
-        
-      </div>
-    <div class="content" v-html="whisper.content">
+      <div class="avatar" :style="'background-image: url('+user.photoURL+')'"></div> 
+      <p class="user-name">{{user.name}}</p> 
+    </div>
+    <!-- editing = trueの時にのみ編集用テキストエリアを表示 -->
+    <div v-if="editing" class="editor">
+      <textarea v-model="whisper.content" placeholder="edit whisper" @keypress.enter="updateWhisper">
+      </textarea>
+      <p class="message">Press Enter to Whisper</p>
+    </div>
+    <div v-else class="content" v-html="whisper.content">
     </div>
     <!-- v-if="currentUser.uid == user.uid"
         投稿ユーザのIDとサインイン中のユーザーのIDが等しいかどうか確認 -->
@@ -19,6 +21,7 @@
     </button>
 
     <div v-if="showBtns" class="controls">
+      <li @click="editing = !editing">edit</li>
       <li @click="deleteWhisper" style="color: red">
         delete
       </li>
@@ -39,7 +42,8 @@ export default {
       // 同様に投稿ユーザーのドキュメントを格納するためのuserを用意
       user: {},
       currentUser: {},
-      showBtns: false
+      showBtns: false,
+      editing: false
     }
   },
   methods: {
@@ -47,6 +51,16 @@ export default {
       if (window.confirm('Are You Sure to Delete This Whisper?')) {
         db.collection('whispers').doc(this.$props.id).delete()
       }
+    },
+    updateWhisper () {
+      const date = new Date()
+      db.collection('whispers').doc(this.whisper.id).set({
+        'content': this.whisper.content,
+        'date': date
+      }, { merge: true })
+      .then(
+        this.editing = false
+      )
     }
   },
   created () {
